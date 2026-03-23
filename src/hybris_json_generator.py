@@ -436,7 +436,7 @@ class HybrisJSONGenerator:
         }
 
         if header_price != transactions_total:
-            print(f"[auto-fix] Price ajustado: {header_price} → {transactions_total} (diferença: {difference} centavos)")
+            print(f"[auto-fix] Price ajustado: {header_price} -> {transactions_total} (diferenca: {difference} centavos)")
             complete_order["price"] = transactions_total
             # Ajustar também unit_price do item para manter consistência
             if complete_order.get("items") and len(complete_order["items"]) > 0:
