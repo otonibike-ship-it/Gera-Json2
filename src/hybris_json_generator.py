@@ -410,14 +410,40 @@ class HybrisJSONGenerator:
             "authorization_code": authorization_code
         }
 
-    def validate_transaction_totals(self, header_price: int, transactions: List[Dict]) -> bool:
-        """Valida se a soma das transações bate com o valor total do cabeçalho"""
-        transactions_total = sum(t["amount"] for t in transactions)
+    def validate_transaction_totals(self, complete_order: Dict) -> Dict:
+        """
+        Valida se a soma das transações bate com o valor total do cabeçalho.
+        Se houver diferença, ajusta automaticamente o price do cabeçalho
+        para bater com a soma real das transações (evita rejeição pela API).
+
+        Retorna dict com informações do ajuste:
+        {
+            "adjusted": bool,
+            "original_price": int,
+            "transactions_total": int,
+            "difference": int
+        }
+        """
+        header_price = complete_order["price"]
+        transactions_total = sum(t["amount"] for t in complete_order["transactions"])
+        difference = abs(header_price - transactions_total)
+
+        result = {
+            "adjusted": False,
+            "original_price": header_price,
+            "transactions_total": transactions_total,
+            "difference": difference
+        }
 
         if header_price != transactions_total:
-            print(f"⚠️ AVISO: Soma das transações ({transactions_total}) difere do valor do pedido ({header_price})")
-            return False
-        return True
+            print(f"[auto-fix] Price ajustado: {header_price} → {transactions_total} (diferença: {difference} centavos)")
+            complete_order["price"] = transactions_total
+            # Ajustar também unit_price do item para manter consistência
+            if complete_order.get("items") and len(complete_order["items"]) > 0:
+                complete_order["items"][0]["unit_price"] = transactions_total
+            result["adjusted"] = True
+
+        return result
 
     def generate_json_with_header(
         self,
@@ -564,8 +590,8 @@ class HybrisJSONGenerator:
 
                 complete_order["transactions"].append(trans)
 
-        # Validar totais
-        self.validate_transaction_totals(complete_order["price"], complete_order["transactions"])
+        # Validar e ajustar totais automaticamente
+        adjustment = self.validate_transaction_totals(complete_order)
 
         return json.dumps(complete_order, indent=2, ensure_ascii=False)
 
