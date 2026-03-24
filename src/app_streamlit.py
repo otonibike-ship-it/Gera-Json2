@@ -2137,15 +2137,20 @@ if st.session_state.json_generated and st.session_state.generated_result:
 
     st.markdown("---")
 
-    # COMPARAÇÃO DE TOTAIS: Header vs Transações
+    # COMPARAÇÃO DE TOTAIS: Header (price) vs Soma das Transações (amounts)
     st.markdown("### 💰 Validação de Totais:")
 
-    # O price já foi ajustado automaticamente pelo generator para bater com a soma
-    final_total = result_obj["price"]  # em centavos (já ajustado)
+    header_price = result_obj["price"]  # em centavos - valor correto do pedido
     transactions_total = sum(t.get("amount", 0) for t in result_obj["transactions"])
+    difference = abs(header_price - transactions_total)
 
-    final_total_reais = final_total / 100
+    header_price_reais = header_price / 100
     transactions_total_reais = transactions_total / 100
+    difference_reais = difference / 100
+
+    # Cor do card de transações muda conforme match
+    trans_border_color = "#27ae60" if header_price == transactions_total else "#e74c3c"
+    trans_text_color = "#27ae60" if header_price == transactions_total else "#e74c3c"
 
     # Exibir cards de comparação
     col1, col2 = st.columns(2)
@@ -2160,10 +2165,10 @@ if st.session_state.json_generated and st.session_state.generated_result:
         ">
             <h4 style="margin-top: 0; color: #333;">📋 Total do Pedido (price)</h4>
             <p style="font-size: 24px; font-weight: bold; color: #3498db; margin: 10px 0;">
-                R$ {final_total_reais:,.2f}
+                R$ {header_price_reais:,.2f}
             </p>
             <p style="color: #666; font-size: 12px; margin: 0;">
-                Valor final do JSON
+                Valor do cabecalho (referencia correta)
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -2174,23 +2179,23 @@ if st.session_state.json_generated and st.session_state.generated_result:
             background-color: #f0f2f6;
             padding: 20px;
             border-radius: 10px;
-            border-left: 5px solid #27ae60;
+            border-left: 5px solid {trans_border_color};
         ">
-            <h4 style="margin-top: 0; color: #333;">💳 Soma das Transações</h4>
-            <p style="font-size: 24px; font-weight: bold; color: #27ae60; margin: 10px 0;">
+            <h4 style="margin-top: 0; color: #333;">💳 Soma das Transacoes</h4>
+            <p style="font-size: 24px; font-weight: bold; color: {trans_text_color}; margin: 10px 0;">
                 R$ {transactions_total_reais:,.2f}
             </p>
             <p style="color: #666; font-size: 12px; margin: 0;">
-                Soma dos amounts
+                Soma dos amounts das transacoes
             </p>
         </div>
         """, unsafe_allow_html=True)
 
-    # Status — sempre vai bater pois o generator ajusta automaticamente
-    if final_total == transactions_total:
+    # Status de validação
+    if header_price == transactions_total:
         st.success("✅ **Totais conferem** — JSON pronto para envio!")
     else:
-        st.info(f"ℹ️ O valor do pedido foi ajustado automaticamente para R$ {transactions_total_reais:,.2f} para bater com a soma das transações.")
+        st.error(f"❌ **Totais nao conferem** — Diferenca de {difference} centavos (R$ {difference_reais:,.2f}) nas transacoes.")
 
     st.markdown("---")
 

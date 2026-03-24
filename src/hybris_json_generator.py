@@ -412,14 +412,14 @@ class HybrisJSONGenerator:
 
     def validate_transaction_totals(self, complete_order: Dict) -> Dict:
         """
-        Valida se a soma das transações bate com o valor total do cabeçalho.
-        Se houver diferença, ajusta automaticamente o price do cabeçalho
-        para bater com a soma real das transações (evita rejeição pela API).
+        Valida se a soma das transacoes bate com o valor total do cabecalho.
+        O price do cabecalho NUNCA e alterado - ele e o valor correto do pedido.
+        Apenas retorna informacoes sobre a diferenca para exibicao na interface.
 
-        Retorna dict com informações do ajuste:
+        Retorna dict com informacoes da validacao:
         {
-            "adjusted": bool,
-            "original_price": int,
+            "match": bool,
+            "header_price": int,
             "transactions_total": int,
             "difference": int
         }
@@ -428,22 +428,15 @@ class HybrisJSONGenerator:
         transactions_total = sum(t["amount"] for t in complete_order["transactions"])
         difference = abs(header_price - transactions_total)
 
-        result = {
-            "adjusted": False,
-            "original_price": header_price,
+        if header_price != transactions_total:
+            print(f"[validacao] Diferenca detectada: price={header_price}, soma_amounts={transactions_total}, diferenca={difference} centavos")
+
+        return {
+            "match": header_price == transactions_total,
+            "header_price": header_price,
             "transactions_total": transactions_total,
             "difference": difference
         }
-
-        if header_price != transactions_total:
-            print(f"[auto-fix] Price ajustado: {header_price} -> {transactions_total} (diferenca: {difference} centavos)")
-            complete_order["price"] = transactions_total
-            # Ajustar também unit_price do item para manter consistência
-            if complete_order.get("items") and len(complete_order["items"]) > 0:
-                complete_order["items"][0]["unit_price"] = transactions_total
-            result["adjusted"] = True
-
-        return result
 
     def generate_json_with_header(
         self,
