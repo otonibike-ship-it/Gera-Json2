@@ -1,0 +1,33 @@
+# Streamlit Configuration for Production Deployment
+# This file configures Streamlit settings for the Hybris JSON Generator application
+
+# Server Configuration
+[server]
+port = 8501
+headless = true
+runOnSave = false
+logger.level = "info"
+enableXsrfProtection = true
+
+# Client Configuration
+[client]
+showErrorDetails = false
+toolbarMode = "auto"  # Permite que usuário veja botão de Settings para mudar tema
+
+# Browser Configuration
+[browser]
+gatherUsageStats = false
+serverAddress = "0.0.0.0"
+
+# Theme Configuration - Tema Escuro (user pode mudar em Settings)
+[theme]
+base = "dark"  # "light" ou "dark" - tema padrão do servidor
+primaryColor = "#FF6B6B"
+backgroundColor = "#0e1117"
+secondaryBackgroundColor = "#161b22"
+textColor = "#c9d1d9"
+font = "sans serif"
+
+# Runtime Configuration
+[logger]
+level = "info"
