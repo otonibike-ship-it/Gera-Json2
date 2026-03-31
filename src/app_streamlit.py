@@ -470,7 +470,7 @@ def page_admin_users():
 
                         # Oferecer botão para fazer logout e testar novo usuário
                         st.info("👇 **Clique abaixo para fazer logout e testar o novo usuário**")
-                        if st.button("🔓 Fazer Logout para Testar Novo Usuário", use_container_width=True, type="primary"):
+                        if st.button("🔓 Fazer Logout para Testar Novo Usuário", use_container_width=True):
                             st.session_state.clear()
                             st.rerun()
 
@@ -967,7 +967,7 @@ elif auth_error:
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("🔓 Fazer Logout", use_container_width=True, type="primary", key="logout_btn"):
+        if st.button("🔓 Fazer Logout", use_container_width=True,key="logout_btn"):
             st.session_state.should_logout = True
     with col2:
         if st.button("🔄 Tentar Novamente", use_container_width=True, key="retry2_btn"):
@@ -1455,7 +1455,7 @@ if transaction_type:
                 trans_data["preserve_payment_fields"] = prefill_pix["payment_fields"]
 
             # Botão para gerar
-            if st.button("🚀 Gerar JSON", type="primary"):
+            if st.button("🚀 Gerar JSON"):
                 # Formulário manual - validar campos
                 if not pix_number or not pix_merchant_name:
                     st.error("⚠️ Por favor, preencha todos os campos obrigatórios!")
@@ -1465,7 +1465,7 @@ if transaction_type:
         # Bloco para JSON colado
         if pix_has_existing == "Sim":
             # Botão para gerar (quando JSON colado)
-            if st.button("🚀 Gerar JSON", type="primary", key="pix_gerar_json"):
+            if st.button("🚀 Gerar JSON",key="pix_gerar_json"):
                 # JSON colado - validar apenas número
                 if not transactions_data or not transactions_data[0].get("number"):
                     st.error("⚠️ JSON colado precisa ter 'number'!")
@@ -1596,7 +1596,7 @@ if transaction_type:
                     trans_data["preserve_external_id"] = prefill_deb["external_id"]
 
             # Botão para gerar
-            if st.button("🚀 Gerar JSON", type="primary"):
+            if st.button("🚀 Gerar JSON"):
                 # Formulário manual - validar campos
                 if not all([deb_number, deb_merchant_name, deb_auth_code]):
                     st.error("⚠️ Por favor, preencha todos os campos obrigatórios!")
@@ -1606,7 +1606,7 @@ if transaction_type:
         # Bloco para JSON colado
         if deb_has_existing == "Sim":
             # Botão para gerar (quando JSON colado)
-            if st.button("🚀 Gerar JSON", type="primary", key="deb_gerar_json"):
+            if st.button("🚀 Gerar JSON",key="deb_gerar_json"):
                 # JSON colado - validar apenas número
                 if not transactions_data or not transactions_data[0].get("number"):
                     st.error("⚠️ JSON colado precisa ter 'number'!")
@@ -1764,7 +1764,7 @@ if transaction_type:
                     trans_data["preserve_external_id"] = prefill_cred["external_id"]
 
             # Botão para gerar
-            if st.button("🚀 Gerar JSON", type="primary"):
+            if st.button("🚀 Gerar JSON"):
                 # Formulário manual - validar campos
                 if not all([cred_number, cred_merchant_name, cred_auth_code]) or cred_quotas == 0:
                     st.error("⚠️ Por favor, preencha todos os campos obrigatórios (incluindo numberOfQuotas)!")
@@ -1774,7 +1774,7 @@ if transaction_type:
         # Bloco para JSON colado
         if cred_has_existing == "Sim":
             # Botão para gerar (quando JSON colado)
-            if st.button("🚀 Gerar JSON", type="primary", key="cred_gerar_json"):
+            if st.button("🚀 Gerar JSON",key="cred_gerar_json"):
                 # JSON colado - validar apenas número
                 if not transactions_data or not transactions_data[0].get("number"):
                     st.error("⚠️ JSON colado precisa ter 'number'!")
@@ -2015,7 +2015,7 @@ if transaction_type:
                     temp_transactions[idx] = trans_data
 
         # Botão para gerar
-        if st.button("🚀 Gerar JSON", type="primary"):
+        if st.button("🚀 Gerar JSON"):
             # Filtrar transações válidas (remover None)
             valid_transactions = [t for t in temp_transactions if t is not None]
 
@@ -2213,7 +2213,7 @@ if st.session_state.json_generated and st.session_state.generated_result:
 
     with col1:
         # Botão de enviar JSON via POST
-        if st.button("🚀 Enviar JSON", type="primary", use_container_width=True):
+        if st.button("🚀 Enviar JSON",use_container_width=True):
             API_URL = "https://portal.sensebike.com.br/glstorefront/cielo/lio/pedido/notificar/status"
 
             if modo_teste:
